@@ -1,3 +1,4 @@
+import json
 import os
 import pickle
 import re
@@ -22,7 +23,6 @@ class DataPreprocessor(object):
 
     def process(self, data_frame: pd.DataFrame):
         headers = data_frame.columns.values.tolist()
-
         word_id_list = []
         text_list = []
         if 'label' in headers:
@@ -54,8 +54,6 @@ if __name__ == '__main__':
     print("write to ", os.path.join(args.output_data, 'data.dataset.parquet'))
     print(f"Load pyarrow.parquet explicitly: {pq}")
     output_data.to_parquet(os.path.join(args.output_data, 'data.dataset.parquet'), engine='pyarrow')
-
-    import json
 
     # Dump data_type.json as a work around until SMT deploys
     dct = {

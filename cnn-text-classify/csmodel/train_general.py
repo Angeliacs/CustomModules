@@ -12,7 +12,7 @@ import torch.nn.functional as F
 import yaml
 from torch.autograd import Variable
 
-from .args_util import train_args, print_parameters
+from .args_util import train_args
 from .data_util import process_data, load_data
 
 logging.info(f"Load pyarrow.parquet explicitly: {pq}")
@@ -88,7 +88,6 @@ class Trainer():
                     feature, target = feature.cuda(), target.cuda()
                 optimizer.zero_grad()
                 logit = self.model(feature)
-
                 loss = F.cross_entropy(logit, target)
                 l2_reg = 0.
                 for param in self.model.parameters():
@@ -103,6 +102,7 @@ class Trainer():
                 train_acc += accuracy
                 sys.stdout.write('\rEpoch[%d] Step[%d] - loss: %f  acc: %f%% (%d/%d)'
                                  % (epoch, step, loss.data, accuracy, corrects, self.args.batch_size))
+
                 if step % self.args.log_interval == 0:
                     train_loss /= self.args.log_interval
                     train_acc /= self.args.log_interval
@@ -112,12 +112,11 @@ class Trainer():
                     logging.info('Epoch[%d] Step[%d] - loss: %f  acc: %f%% (%d/%d)'
                                  % (epoch, step, loss.data, accuracy, corrects, self.args.batch_size))
                     test_loss, test_acc = self.eval()
-
                     self.model.train()
                     if test_acc > best_acc:
                         best_acc, last_step = test_acc, step
                         if self.args.save_best:
-                            self.save('best', step)
+                            self.save('best', last_step)
                             continue
 
     def eval(self):
@@ -128,10 +127,8 @@ class Trainer():
             target = Variable(target)
             if self.args.cuda:
                 feature, target = feature.cuda(), target.cuda()
-
             logit = self.model(feature)
             loss = F.cross_entropy(logit, target, size_average=False)
-
             avg_loss += loss.data
             corrects += (torch.max(logit, 1)[1].view(target.size()).data == target.data).sum()
 
@@ -185,7 +182,6 @@ class TextCNN(nn.Module):
     def __init__(self, args):
         super(TextCNN, self).__init__()
         self.args = args
-
         embed_num = args.embed_num
         embed_dim = args.embed_dim
         class_num = args.class_num
@@ -219,13 +215,10 @@ class TextCNN(nn.Module):
 
 if __name__ == '__main__':
     args = train_args()
-    print_parameters(args)
-
     if not os.path.isdir(args.trained_model):
         os.makedirs(args.trained_model)
     logname = os.path.join(args.trained_model, "/train.log")
     logging.basicConfig(filename=logname, filemode='w', level=logging.DEBUG)
-
     trainer = Trainer(args)
     with open(os.path.join(args.trained_model, 'config.pkl'), 'wb') as f:
         pickle.dump(args, f, protocol=pickle.HIGHEST_PROTOCOL)

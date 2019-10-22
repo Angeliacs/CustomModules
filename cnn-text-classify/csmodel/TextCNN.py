@@ -8,7 +8,6 @@ class TextCNN(nn.Module):
     def __init__(self, args):
         super(TextCNN, self).__init__()
         self.args = args
-
         embed_num = args.embed_num
         embed_dim = args.embed_dim
         class_num = args.class_num

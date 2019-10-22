@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import pickle
 import sys
 
@@ -9,7 +10,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 
-from .args_util import *
+from .args_util import train_args
 from .data_util import process_data, load_data
 
 logging.info(f"Load pyarrow.parquet explicitly: {pq}")
@@ -114,7 +115,7 @@ class Trainer():
                     if test_acc > best_acc:
                         best_acc, last_step = test_acc, step
                         if self.args.save_best:
-                            self.save('best', step)
+                            self.save('best', last_step)
                             continue
 
     def eval(self):
@@ -175,7 +176,6 @@ class TextCNN(nn.Module):
     def __init__(self, args):
         super(TextCNN, self).__init__()
         self.args = args
-
         embed_num = args.embed_num
         embed_dim = args.embed_dim
         class_num = args.class_num
@@ -209,13 +209,10 @@ class TextCNN(nn.Module):
 
 if __name__ == '__main__':
     args = train_args()
-    print_parameters(args)
-
     if not os.path.isdir(args.trained_model):
         os.makedirs(args.trained_model)
     logname = os.path.join(args.trained_model, "/train.log")
     logging.basicConfig(filename=logname, filemode='w', level=logging.DEBUG)
-
     trainer = Trainer(args)
     with open(os.path.join(args.trained_model, 'config.pkl'), 'wb') as f:
         pickle.dump(args, f, protocol=pickle.HIGHEST_PROTOCOL)
