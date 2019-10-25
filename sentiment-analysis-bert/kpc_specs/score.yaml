@@ -1,5 +1,5 @@
-name: TextCNN Score Model
-description: Predict the classes through the trained TextCNN model
+name: Sentiment Analysis Score
+description: Predict the classes through the trained Bert model
 inputs:
 - name: Trained model
   type: ModelFolder
@@ -17,11 +17,11 @@ implementation:
     command:
     - python
     - -m
-    - csmodel.score
+    - script.score
     args:
-    - --trained-model
+    - --trained_model_dir
     - inputValue: Trained model
-    - --predict-path
+    - --dev_file
     - inputValue: Predict data
-    - --predict-result-path
+    - --output_dir
     - outputPath: Predict result

@@ -1,9 +1,6 @@
-name: TextCNN Word to Id
-description: Transform Word to Id
+name: Sentiment Analysis Process
+description: Semantic Analysis Process
 inputs:
-- name: Input vocab
-  type: GenericFolder
-  description: The vocabulary file
 - name: Input text
   type: TabularDataFolder
   description: Input text
@@ -17,11 +14,9 @@ implementation:
     command:
     - python
     - -m
-    - csmodel.preprocess_data
+    - script.processor
     args:
-    - --input-vocab
-    - inputValue: Input vocab
-    - --input-data
+    - --input_file
     - inputValue: Input text
-    - --output-data
+    - --output_dir
     - outputPath: Processed data

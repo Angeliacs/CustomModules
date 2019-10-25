@@ -1,12 +1,8 @@
-name: TextCNN Word to Id
-id: 89b03051-b9d1-4a79-8c8c-f627290b875a
+name: Sentiment Analysis Process
+id: e495fef6-c020-47d4-a244-e7be15428be0
 category: Machine Learning\Preprocess
-description: Transform Word to Id
+description: Semantic Analysis Process
 inputs:
-- name: Input vocab
-  type: GenericFolder
-  port: True
-  description: The vocabulary file
 - name: Input text
   type: TabularDataFolder
   port: True
@@ -32,21 +28,20 @@ implementation:
         - pyarrow==0.12.1
         - nltk==3.4
         - numpy==1.16.2
+        - pytorch-pretrained-bert==0.6.2
         - https://download.pytorch.org/whl/cu100/torch-1.1.0-cp36-cp36m-linux_x86_64.whl
         - torchvision==0.2.2.post3
-        - git+https://github.com/Angeliacs/azureml-custom-module-examples.git@master#subdirectory=cnn-text-classify
+        - git+https://github.com/Angeliacs/azureml-custom-module-examples.git@chsi/bert-classification#subdirectory=Bert-Classification
     command:
     - python
     - -m
-    - csmodel.preprocess_data
+    - script.processor
     args:
-    - --input-vocab
-    - inputValue: Input vocab
-    - --input-data
+    - --input_file
     - inputValue: Input text
-    - --output-data
+    - --output_dir
     - outputPath: Processed data
   invoking:
-    module: csmodel.preprocess_data
-    class: DataPreprocessor
-    func: process
+    module: script.processor
+    class: Processor
+    func: get_examples
