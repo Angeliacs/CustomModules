@@ -1,0 +1,53 @@
+name: Sentiment Analysis Train
+description: Trains a Bert model in a supervised manner
+inputs:
+- name: Train data file
+  type: TabularDataFolder
+  description: Training data
+- name: Bert model
+  default: bert-base-uncased
+  type: String
+  description: Bert model
+- name: Max seq Length
+  default: 50
+  type: Int
+  description: Max seq Length
+- name: Batch size
+  default: 32
+  type: Int
+  description: Batch size
+- name: Learning rate
+  default: 0.1
+  type: Float
+  description: Learning rate
+- name: Epoch num
+  default: 1
+  type: Int
+  description: Epoch num
+outputs:
+- name: Trained model
+  type: ModelFolder
+  description: Trained learner
+implementation:
+  container:
+    image: mycorp/my-docker-image
+    command:
+    - python
+    - -m
+    - script.train
+    - --do_lower_case
+    args:
+    - --bert_model
+    - inputValue: Bert model
+    - --max_seq_length
+    - inputValue: Max seq Length
+    - --train_batch_size
+    - inputValue: Batch size
+    - --train_file
+    - inputValue: Train data file
+    - --learning_rate
+    - inputValue: Learning rate
+    - --num_train_epochs
+    - inputValue: Epoch num
+    - --output_dir
+    - outputPath: Trained model
