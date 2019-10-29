@@ -1,0 +1,29 @@
+name: QA Score
+description: Predict the answers through the trained Bert model
+inputs:
+- name: Trained model
+  type: ModelFolder
+  port: True
+  description: The trained model file
+- name: Predict data
+  type: GenericFolder
+  port: True
+  description: Predict data
+outputs:
+- name: Predict result
+  type: GenericFolder
+  description: Predict result
+implementation:
+  container:
+    image: mycorp/my-docker-image
+    command:
+    - python
+    - -m
+    - examples.score
+    args:
+    - --trained_model_dir
+    - inputValue: Trained model
+    - --predict_file
+    - inputValue: Predict data
+    - --output_dir
+    - outputPath: Predict result

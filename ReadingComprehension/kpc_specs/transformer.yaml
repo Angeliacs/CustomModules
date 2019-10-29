@@ -1,0 +1,23 @@
+name: QA Process
+description:  Transform dataframe into json file
+inputs:
+- name: Input text
+  type: TabularDataFolder
+  port: True
+  description: Input text
+outputs:
+- name: Processed data
+  type: GenericFolder
+  description: Processed data
+implementation:
+  container:
+    image: mycorp/my-docker-image
+    command:
+    - python
+    - -m
+    - examples.transformer
+    args:
+    - --input_file
+    - inputValue: Input text
+    - --output_dir
+    - outputPath: Processed data

@@ -1,0 +1,72 @@
+name: QA Train
+description: Trains a Bert/Xlnet model in a supervised manner
+inputs:
+- name: Train data file
+  type: GenericFolder
+  port: True
+  description: Training data
+- name: Model type
+  default: bert
+  type: String
+  description: Model type
+- name: Model name
+  default: bert-large-uncased-whole-word-masking
+  type: String
+  description: Model name
+- name: Max seq Length
+  default: 50
+  type: Int
+  description: Max seq length
+- name: Max query Length
+  default: 50
+  type: Int
+  description: Max query length
+- name: Max answer Length
+  default: 50
+  type: Int
+  description: Max answer length
+- name: Batch size
+  default: 32
+  type: Int
+  description: Batch size
+- name: Learning rate
+  default: 0.1
+  type: Float
+  description: Learning rate
+- name: Epoch num
+  default: 1
+  type: Int
+  description: Epoch num
+outputs:
+- name: Trained model
+  type: ModelFolder
+  description: Trained learner
+implementation:
+  container:
+    image: mycorp/my-docker-image
+    command:
+    - python
+    - -m
+    - examples.train
+    - --do_lower_case
+    args:
+    - --model_type
+    - inputValue: Model type
+    - --model_name_or_path
+    - inputValue: Model name
+    - --max_seq_length
+    - inputValue: Max seq length
+    - --max_query_length
+    - inputValue: Max query length
+    - --max_answer_length
+    - inputValue: Max answer length
+    - --train_file
+    - inputValue: Train data file
+    - --learning_rate
+    - inputValue: Learning rate
+    - --num_train_epochs
+    - inputValue: Epoch num
+    - --per_gpu_train_batch_size
+    - inputValue: Batch size
+    - --output_dir
+    - outputPath: Trained model
