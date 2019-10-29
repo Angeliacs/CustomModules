@@ -61,7 +61,6 @@ class Processor(DataProcessor):
 
     def get_examples(self, dataframe):
         """See base class."""
-        # print(self._read_tsv(train_file))
         return self._create_examples(
             self._read_tsv(dataframe))
 
